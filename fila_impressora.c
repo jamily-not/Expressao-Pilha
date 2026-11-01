@@ -11,23 +11,22 @@ typedef struct Nodo {
     struct Nodo *prox;
 } Nodo;
 
-//TDA da fila
+// TDA da fila
 typedef struct Fila {
     Nodo *inicio;
     Nodo *fim;
     int quantidade;
 } Fila;
 
-/* Protótipos das funções */
+/* ProtÃ³tipos das funÃ§Ãµes */
 void inicializa_fila(Fila *fila);
 Nodo *Cria_Nodo(void);
 void insere_nodo_fila(Fila *fila, Nodo *novo);
 void insere_fila(Fila *fila, int prioridade, const char *identificacao);
 Nodo *remove_fila(Fila *fila);
 int carregar_arquivo(Fila *entrada, const char *nomeArquivo);
-void exibe_fila_prioridade(const Fila *fila, const char *titulo);
-void exibe_todas_filas(const Fila *entrada, const Fila *maxima, const Fila *normal, const Fila *baixa);
-void distribuir(Fila *entrada, Fila *maxima, Fila *normal, Fila *baixa);
+void exibe_todas_filas(const Fila *entrada, const Fila *maxima, const Fila *normal, const Fila *baixa, Nodo *lote[], int qtdLote);
+int distribuir(Fila *entrada, Fila *maxima, Fila *normal, Fila *baixa, Nodo *lote[]);
 void libera_fila(Fila *fila);
 
 int main(void) {
@@ -35,7 +34,10 @@ int main(void) {
     const char *nomeArquivo = "impressoraFila.txt";
     int ciclo = 1;
 
-    // Inicialização das 4 filas 
+    Nodo *lote[5];
+    int qtdLote = 0;
+
+    // InicializaÃ§Ã£o das 4 filas 
     inicializa_fila(&entrada);
     inicializa_fila(&maxima);
     inicializa_fila(&normal);
@@ -49,23 +51,20 @@ int main(void) {
         return 1;
     }
 
-    printf("RECEBENDO SOLICITACAO DE IMPRESSAO\n\n");
-    exibe_todas_filas(&entrada, &maxima, &normal, &baixa);
+    printf("\t\tRECEBENDO SOLICITACAO DE IMPRESSAO\n\n");
+    exibe_todas_filas(&entrada, &maxima, &normal, &baixa, NULL, 0);
 
-    // Processamento em lotes de até 5 solicitações a cada 0.5 segundo
+    // Processamento em lotes de atÃ© 5 solicitaÃ§Ãµes a cada 0.5 segundo
     while (entrada.inicio != NULL) {
         Sleep(500); // Pausa de 0.5 segundo
-        distribuir(&entrada, &maxima, &normal, &baixa);
-
-        printf("\n----------------------------------------------------------------------\n");
-        printf("Etapa %d: Depois de distribuir ate 5 solicitacoes de impressao\n\n", ciclo++);
-        exibe_todas_filas(&entrada, &maxima, &normal, &baixa);
+        qtdLote = distribuir(&entrada, &maxima, &normal, &baixa, lote);
+        printf("\n\t\tEtapa %d: Depois de distribuir ate 5 solicitacoes de impressao\n\n", ciclo++);
+        exibe_todas_filas(&entrada, &maxima, &normal, &baixa, lote, qtdLote);
     }
 
-    printf("\n----------------------------------------------------------------------\n");
-    printf("DISTRIBUICAO CONCLUIDA COM SUCESSO DE TODAS AS FILAS!\n");
+    printf("\n\n\t\tDISTRIBUICAO CONCLUIDA COM SUCESSO DE TODAS AS FILAS!\n");
 
-    // Desalocação final de memória
+    // DesalocaÃ§Ã£o final de memÃ³ria
     libera_fila(&entrada);
     libera_fila(&maxima);
     libera_fila(&normal);
@@ -91,7 +90,7 @@ Nodo *Cria_Nodo(void) {
     return p;
 }
 
-/* Insere um nó no final da fila */
+/* Insere um nÃ³ no final da fila */
 void insere_nodo_fila(Fila *fila, Nodo *novo) {
     novo->prox = NULL;
     if (fila->inicio == NULL) {
@@ -103,7 +102,7 @@ void insere_nodo_fila(Fila *fila, Nodo *novo) {
     fila->quantidade++;
 }
 
-/* insere um novo elemento no fim da fila (comportamento FIFO) */
+/* Insere um novo elemento no fim da fila (comportamento FIFO) */
 void insere_fila(Fila *fila, int prioridade, const char *identificacao) {
     Nodo *novo = Cria_Nodo();
     novo->prioridade = prioridade;
@@ -113,7 +112,7 @@ void insere_fila(Fila *fila, int prioridade, const char *identificacao) {
     insere_nodo_fila(fila, novo);
 }
 
-/* Remove e retorna o nó do início da fila */
+/* Remove e retorna o nÃ³ do inÃ­cio da fila */
 Nodo *remove_fila(Fila *fila) {
     Nodo *retirado = fila->inicio;
 
@@ -131,7 +130,7 @@ Nodo *remove_fila(Fila *fila) {
     return retirado;
 }
 
-/* Lê do arquivo no formato 'prioridade, identificacao;' usando fopen e fscanf */
+/* LÃª do arquivo no formato 'prioridade, identificacao;' usando fopen e fscanf */
 int carregar_arquivo(Fila *entrada, const char *nomeArquivo) {
     FILE *arquivo = fopen(nomeArquivo, "r");
     int prioridade;
@@ -151,7 +150,7 @@ int carregar_arquivo(Fila *entrada, const char *nomeArquivo) {
 
         insere_fila(entrada, prioridade, identificacao);
 
-        // Avança até o caractere delimitador ';' ou '.'
+        // AvanÃ§a atÃ© o caractere delimitador ';' ou '.'
         while ((c = fgetc(arquivo)) != EOF) {
             if (c == ';' || c == '.') {
                 break;
@@ -162,47 +161,72 @@ int carregar_arquivo(Fila *entrada, const char *nomeArquivo) {
     fclose(arquivo);
 
     if (entrada->quantidade < 50) {
-        printf("[AVISO] Para registros sera necessario no minimo 50 solicitacoes.\n Encontradas: %d\n", entrada->quantidade);
+        printf("\t\tPara registros sera necessario no minimo 50 solicitacoes.\n Encontradas: %d\n", entrada->quantidade);
         return 0;
     }
 
     return 1;
 }
 
-/* Exibe o conteúdo de cada fila de prioridade na vertical com tabulação (\t) */
-void exibe_fila_prioridade(const Fila *fila, const char *titulo) {
-    const Nodo *aux = fila->inicio;
-
-    printf("\n%s  - %d itens\n", titulo, fila->quantidade);
-
-    if (aux == NULL) {
-        printf("\t(Vazia)\n");
-        return;
-    }
-
-    while (aux != NULL) {
-        printf("\t[%s | Prioridade: %d]\n", aux->identificacao, aux->prioridade);
-        aux = aux->prox;
-    }
-}
-
-/* Exibe o estado das 4 filas */
-void exibe_todas_filas(const Fila *entrada, const Fila *maxima, const Fila *normal, const Fila *baixa) {
+/* Exibe o estado das 4 filas em formato de Tabela com colunas lado a lado e mostra as 5 solicitaÃ§Ãµes lidas no lote */
+void exibe_todas_filas(const Fila *entrada, const Fila *maxima, const Fila *normal, const Fila *baixa, Nodo *lote[], int qtdLote) {
+    int i;
     printf(" > FILA DE ENTRADA                  [%d itens]:\n\n", entrada->quantidade);
     printf("Identificando IP e prioridade...\n");
 
-    exibe_fila_prioridade(maxima, "FILA 0 (Prioridade Maxima - 1)");
-    exibe_fila_prioridade(normal, "FILA 1 (Prioridade Normal - 2)");
-    exibe_fila_prioridade(baixa,  "FILA 2 (Prioridade Baixa  - 3)");
+    // Mostra as solicitaÃ§Ãµes retiradas no lote atual
+    if (qtdLote > 0 && lote != NULL) {
+        for (i = 0; i < qtdLote; i++) {
+            printf("IP: %-15s \t Prioridade: %d\n", lote[i]->identificacao, lote[i]->prioridade);
+        }
+    }
+    printf("\n");
+
+    // CabeÃ§alho da Tabela
+    printf("+----------------------------------+----------------------------------+----------------------------------+\n");
+    printf("| FILA 0 (Prioridade Maxima = 1)   | FILA 1 (Prioridade Normal = 2)   | FILA 2 (Prioridade Baixa = 3)    |\n");
+    printf("| Total: %-25d | Total: %-25d | Total: %-25d |\n", maxima->quantidade, normal->quantidade, baixa->quantidade);
+    printf("+----------------------------------+----------------------------------+----------------------------------+\n");
+
+    const Nodo *p0 = maxima->inicio;
+    const Nodo *p1 = normal->inicio;
+    const Nodo *p2 = baixa->inicio;
+
+    if (p0 == NULL && p1 == NULL && p2 == NULL) {
+        printf("| %-32s | %-32s | %-32s |\n", "(Vazia)", "(Vazia)", "(Vazia)");
+    } else {
+        // Percorre as 3 filas simultaneamente linha por linha
+        while (p0 != NULL || p1 != NULL || p2 != NULL) {
+            char str0[35] = "", str1[35] = "", str2[35] = "";
+
+            if (p0 != NULL) {
+                snprintf(str0, sizeof(str0), "[%s | P: %d]", p0->identificacao, p0->prioridade);
+                p0 = p0->prox;
+            }
+            if (p1 != NULL) {
+                snprintf(str1, sizeof(str1), "[%s | P: %d]", p1->identificacao, p1->prioridade);
+                p1 = p1->prox;
+            }
+            if (p2 != NULL) {
+                snprintf(str2, sizeof(str2), "[%s | P: %d]", p2->identificacao, p2->prioridade);
+                p2 = p2->prox;
+            }
+
+            printf("| %-32s | %-32s | %-32s |\n", str0, str1, str2);
+        }
+    }
+    printf("+----------------------------------+----------------------------------+----------------------------------+\n");
 }
 
-/* Move até 5 elementos da fila de Entrada para as filas de prioridade */
-void distribuir(Fila *entrada, Fila *maxima, Fila *normal, Fila *baixa) {
-    int i;
+/* Move atÃ© 5 elementos da fila de Entrada para as filas de prioridade e salva a referÃªncia do lote processado */
+int distribuir(Fila *entrada, Fila *maxima, Fila *normal, Fila *baixa, Nodo *lote[]) {
+    int i, qtd = 0;
     Nodo *solicitacao;
 
     for (i = 0; i < 5 && entrada->inicio != NULL; i++) {
         solicitacao = remove_fila(entrada);
+        lote[qtd++] = solicitacao;
+
         if (solicitacao->prioridade == 1) {
             insere_nodo_fila(maxima, solicitacao);
         } else if (solicitacao->prioridade == 2) {
@@ -211,9 +235,10 @@ void distribuir(Fila *entrada, Fila *maxima, Fila *normal, Fila *baixa) {
             insere_nodo_fila(baixa, solicitacao);
         }
     }
+    return qtd;
 }
 
-/* Desaloca todos os nós da fila */
+/* Desaloca todos os nÃ³s da fila */
 void libera_fila(Fila *fila) {
     Nodo *aux;
     while (fila->inicio != NULL) {
