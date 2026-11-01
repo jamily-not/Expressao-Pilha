@@ -1,4 +1,4 @@
-// Autora: Jamily Notario
+/* Autora: Jamily Notario */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,7 +92,7 @@ Nodo *Cria_Nodo(void) {
     return p;
 }
 
-// Insere um nó no final da fila
+// recebe um nodo ja criado e engata no final da fila
 void insere_nodo_fila(Fila *fila, Nodo *novo) {
     novo->prox = NULL;
     if (fila->inicio == NULL) {
@@ -104,7 +104,7 @@ void insere_nodo_fila(Fila *fila, Nodo *novo) {
     fila->quantidade++;
 }
 
-// Insere um novo elemento no fim da fila (comportamento FIFO) 
+// alloca nodo, identifica ip e prioridade e pede para funcao inserir no fim da fila (FIFO)
 void insere_fila(Fila *fila, int prioridade, const char *identificacao) {
     Nodo *novo = Cria_Nodo();
     novo->prioridade = prioridade;
