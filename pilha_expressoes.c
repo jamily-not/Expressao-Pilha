@@ -5,7 +5,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-
 #define MAX_EXPRESSAO 300
 
 typedef struct PilhaOperadores {
