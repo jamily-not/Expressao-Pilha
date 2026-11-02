@@ -2,7 +2,7 @@
 
 Este repositório armazena dois programas desenvolvidos para a disciplina de Estrutura de Dados I. Seu principal objetivo é a compreensão e a capacidade de aplicar as estruturas de dados **Pilha** e **Fila** na resolução de problemas práticos.
 
----
+<br>
 
 # Sobre `pilha_expressoes.c`
 
@@ -16,7 +16,7 @@ O programa converte expressões infixas para pósfixas e préfixas, realiza vali
 - [ ] **Pósfixa:** `2 3 4 * +` $\rightarrow$
 - [x] **Préfixa:** `+ * 4 3 2` $\leftarrow$
 
----
+<br>
 
 ## Algoritmo Shunting Yard
 
@@ -42,7 +42,7 @@ Ao identificar uma expressão como `2 * 3 + 4`:
 - Fim da expressão (`\0`) $\rightarrow$ **Desempilha-se** o restante da pilha (`+`) para a saída.
 - **Resultado final pósfixo:** `2 3 * 4 +`.
 
----
+<br>
 
 ## Fluxo da `main` e Arquitetura do Programa (`pilha_expressoes.c`)
 
@@ -75,7 +75,7 @@ main()
 └── liberaExpressao(&expressao)  -->  free()
 ```
 
----
+<br>
 
 # Sobre `fila_impressora.c`
 
@@ -94,7 +94,7 @@ O sistema utiliza **4 filas encadeadas**:
 
 As solicitações são processadas em lotes de até **5 itens por ciclo** (com intervalo de 0,5s configurado via `Sleep`), sendo removidas do **início** da Fila de Entrada e engatadas no **fim** da Fila de Prioridade correspondente.
 
----
+<br>
 
 ## Estrutura e Etapas do Programa (`fila_impressora.c`)
 
@@ -129,3 +129,20 @@ main()
           ├── remove_fila()
           └── free()
 ```
+
+<br>
+
+# Referências
+
+## Algoritmo de Shunting Yard e Pilha
+
+- **Shunting-yard algorithm.** In: *Wikipedia: a enciclopédia livre*[cite: 8]. 2026[cite: 8]. Disponível em: [Wikipedia](https://en.wikipedia.org/wiki/Shunting_yard_algorithm)[cite: 8]. Acesso em: 26 out. 2026[cite: 8].
+- **SOLUÇÕES da Beecrowd:** *Algoritmo de Shunting Yard*[cite: 8]. GitBook, 2026[cite: 8]. Disponível em: [GitBook - Algoritmo de Shunting Yard](https://xtecna.gitbook.io/solucoes-da-beecrowd/base-teorica/algoritmos-raros/algoritmo-de-shunting-yard#c99)[cite: 8]. Acesso em: 20 out. 2026[cite: 8].
+- **SOLUÇÕES da Beecrowd:** *Infixa para Posfixa (Problema 1077)*[cite: 8]. GitBook, 2026[cite: 8]. Disponível em: [GitBook - Problema 1077](https://xtecna.gitbook.io/solucoes-da-beecrowd/estruturas-e-bibliotecas/1077-infixa-para-posfixa)[cite: 8]. Acesso em: 23 out. 2026[cite: 8].
+- **SOLUÇÕES da Beecrowd:** *Pilha*[cite: 8]. GitBook, 2026[cite: 8]. Disponível em: [GitBook - Pilha](https://xtecna.gitbook.io/solucoes-da-beecrowd/base-teorica/estruturas-e-bibliotecas/pilha)[cite: 8]. Acesso em: 20 out. 2026[cite: 8].
+
+
+## Manipulação de Arquivos TXT e Fila com Prioridade
+
+- **COMO armazenar variáveis em arquivos TXT?** Stack Overflow em Português, 2016[cite: 7]. Disponível em: [Stack Overflow](https://pt.stackoverflow.com/questions/157282/como-armazenar-variaveis-em-arquivos-txt)[cite: 7]. Acesso em: 27 out. 2026[cite: 7].
+- **FONTINHAS, P. A.** *Trabalho-Pratico-2-ED1: repositório de código referente a aplicação de fila de prioridade em C*[cite: 7]. GitHub, 2026[cite: 7]. Disponível em: [GitHub - PAFONTINHAS](https://github.com/PAFONTINHAS/Trabalho-Pratico-2-ED1)[cite: 7]. Acesso em: 14 out. 2026[cite: 7].
